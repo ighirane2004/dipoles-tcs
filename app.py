@@ -64,7 +64,7 @@ st.set_page_config(layout="wide", page_title="Étude des Dipôles Passifs")
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Bonjour ! Choisis un dipôle à gauche, observe sa courbe, et pose-moi tes questions pour démarrer la leçon."}
+        {"role": "assistant", "content": "Bonjour ! Nous allons étudier les dipôles ensemble. Pour commencer, sais-tu faire la différence entre un dipôle passif et un dipôle actif vis-à-vis du courant et de la tension ?"}
     ]
 
 col_sim, col_chat = st.columns([3, 2])
