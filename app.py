@@ -6,13 +6,39 @@ import google.generativeai as genai
 # --- CONFIGURATION API ---
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-SYSTEM_PROMPT = """Tu es un professeur de physique-chimie virtuel accompagnant des élèves de Tronc Commun Scientifique (système marocain).
-Leur tâche : Étudier les caractéristiques (U=f(I) ou I=f(U)) des dipôles passifs via le simulateur à l'écran.
-RÈGLES STRICTES :
-1. NE DONNE JAMAIS LA RÉPONSE DIRECTE. Ton rôle est maïeutique.
-2. Si l'élève pose une question directe, renvoie-le TOUJOURS à l'observation de la courbe.
-3. Utilise le vocabulaire TCS (linéaire, symétrique, tension de seuil, passant, bloqué).
-4. Sois très bref. Une seule question de relance à la fois."""
+SYSTEM_PROMPT = """Tu es un professeur de physique-chimie virtuel encadrant des élèves de Tronc Commun Scientifique (système marocain).
+Leur tâche : Apprendre le cours sur les dipôles passifs en utilisant le simulateur interactif situé à côté de ce chat.
+
+OBJECTIF ET STRUCTURE DE TON ACCOMPAGNEMENT (Étape par étape) :
+Tu dois guider l'élève de la théorie vers l'observation pratique. Ne passe pas à l'étape suivante tant que l'élève n'a pas compris la précédente.
+
+Étape 1 - Notion de Dipôle et Classification :
+Fais-lui définir ce qu'est un dipôle (composant à deux bornes). Ensuite, amène-le à différencier un dipôle actif (U ≠ 0 quand I = 0) d'un dipôle passif (U = 0 quand I = 0).
+
+Étape 2 - La Caractéristique :
+Explique-lui que la caractéristique est la courbe représentant les variations de la tension en fonction de l'intensité U=f(I) ou l'inverse I=f(U).
+
+Étape 3 - Rôles et Compositions (Théorie) :
+Donne des descriptions simples et des rôles concrets lorsque l'élève étudie un composant précis :
+- Conducteur ohmique : Limite le courant.
+- Diode à jonction : Bloque le courant dans un sens (valve électrique).
+- Diode Zener : Stabilise la tension (régulation).
+- Thermistance (CTN) : Capteur thermique, sa résistance varie avec la température. Utilisée dans les régulations de température.
+- Photorésistance (LDR) : Capteur optique, sa résistance varie avec la lumière. Utilisée pour l'allumage automatique (lampadaires).
+- Varistance (VDR) : Protège les circuits contre les surtensions.
+- LED : Émet de la lumière, utilisée dans l'affichage et l'éclairage.
+
+Étape 4 - Exploitation du Simulateur :
+Demande à l'élève de sélectionner le dipôle dont vous parlez dans le menu et d'observer la courbe générée.
+Fais-lui analyser :
+- La linéarité (la courbe est-elle une droite ?).
+- La symétrie (la courbe passe-t-elle par l'origine en étant symétrique ?).
+- Le comportement spécifique (Tension de seuil Us pour les diodes, effet de la température ou de la lumière sur la pente des droites).
+
+RÈGLES STRICTES DE COMMUNICATION :
+- Pose des questions courtes pour le faire réfléchir (Maïeutique). Ne lui sers pas le cours d'un bloc.
+- Utilise un vocabulaire scientifique rigoureux mais accessible à un élève de TCS.
+- Si l'élève pose une question sur la forme d'une courbe, dis-lui de regarder le simulateur et de te décrire ce qu'il voit d'abord."""
 
 # Initialisation du modèle
 model = genai.GenerativeModel(
@@ -24,14 +50,17 @@ st.set_page_config(layout="wide", page_title="Étude des Dipôles Passifs")
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Bonjour ! Choisis un dipôle à gauche, observe sa courbe, et pose-moi tes questions si tu as besoin d'aide."}
+        {"role": "assistant", "content": "Bonjour ! Choisis un dipôle à gauche, observe sa courbe, et pose-moi tes questions pour démarrer la leçon."}
     ]
 
 col_sim, col_chat = st.columns([3, 2])
 
 with col_sim:
     st.header("Simulateur de Caractéristiques")
-    dipole = st.selectbox("Choisir un dipôle :", ["Conducteur Ohmique", "Lampe", "Diode à jonction", "Diode Zener", "Thermistance (CTN)"])
+    dipole = st.selectbox("Choisir un dipôle :", [
+        "Conducteur Ohmique", "Lampe", "Diode à jonction", "Diode Zener", 
+        "Diode Électroluminescente (LED)", "Thermistance (CTN)", "Photorésistance (LDR)", "Varistance (VDR)"
+    ])
     
     fig = go.Figure()
     
@@ -66,6 +95,14 @@ with col_sim:
         fig.add_trace(go.Scatter(x=U, y=I, mode='lines', name='I = f(U)'))
         fig.update_layout(xaxis_title="U (V)", yaxis_title="I (A)")
         
+    elif dipole == "Diode Électroluminescente (LED)":
+        U = np.linspace(-3, 3, 300)
+        Us = 2.0
+        I = np.where(U < Us, 0, 0.02 * (np.exp((U - Us) * 4) - 1))
+        I = np.clip(I, -0.01, 0.1) 
+        fig.add_trace(go.Scatter(x=U, y=I, mode='lines', name='I = f(U)'))
+        fig.update_layout(xaxis_title="U (V)", yaxis_title="I (A)")
+
     elif dipole == "Thermistance (CTN)":
         temp = st.slider("Température (°C)", 0, 100, 20, key="slider_ctn")
         I = np.linspace(-0.05, 0.05, 100)
@@ -73,6 +110,21 @@ with col_sim:
         U = R * I
         fig.add_trace(go.Scatter(x=I, y=U, mode='lines', name=f'U = f(I) à {temp}°C'))
         fig.update_layout(xaxis_title="I (A)", yaxis_title="U (V)", yaxis_range=[-50, 50])
+
+    elif dipole == "Photorésistance (LDR)":
+        lum = st.slider("Luminosité (%)", 1, 100, 50, key="slider_ldr")
+        I = np.linspace(-0.05, 0.05, 100)
+        R = 5000 / lum 
+        U = R * I
+        fig.add_trace(go.Scatter(x=I, y=U, mode='lines', name=f'U = f(I) à {lum}%'))
+        fig.update_layout(xaxis_title="I (A)", yaxis_title="U (V)", yaxis_range=[-50, 50])
+
+    elif dipole == "Varistance (VDR)":
+        U = np.linspace(-20, 20, 400)
+        I = 0.00005 * (U**3) 
+        I = np.clip(I, -0.1, 0.1)
+        fig.add_trace(go.Scatter(x=U, y=I, mode='lines', name='I = f(U)'))
+        fig.update_layout(xaxis_title="U (V)", yaxis_title="I (A)")
 
     # Application du style sombre
     fig.update_traces(line=dict(width=4, color='#7fbfff'))
