@@ -1,9 +1,9 @@
 import streamlit as st
 import plotly.graph_objects as go
 import numpy as np
-import google.generativeai as genai 
+import google.generativeai as genai
 
-# Configuration API sécurisée
+# --- CONFIGURATION API ---
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 SYSTEM_PROMPT = """Tu es un professeur de physique-chimie strict et méthodique pour des élèves de Tronc Commun Scientifique (système marocain).
@@ -25,6 +25,8 @@ PLAN DE LA LEÇON À SUIVRE STRICTEMENT :
 11. Effet Zener : Fais-lui comparer avec la "Diode Zener" pour les tensions négatives. Explique son rôle de stabilisateur de tension.
 12. Capteurs : Fais-lui manipuler la CTN (température) et la LDR (luminosité) pour observer l'évolution de la pente.
 
+Ton ton : Pédagogue, direct, socratique."""
+
 model = genai.GenerativeModel(
     model_name="gemini-2.5-flash",
     system_instruction=SYSTEM_PROMPT
@@ -32,10 +34,9 @@ model = genai.GenerativeModel(
 
 st.set_page_config(layout="wide", page_title="Étude des Dipôles Passifs")
 
-# Amorce proactive du chatbot
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Bonjour ! Nous allons étudier les dipôles ensemble. Pour commencer, sais-tu faire la différence entre un dipôle passif et un dipôle actif vis-à-vis du courant et de la tension ?"}
+        {"role": "assistant", "content": "Bonjour ! Nous allons construire le cours ensemble. Pour commencer, pense à une petite lampe ou au moteur d'un jouet. Combien de points de connexion (ou bornes) possèdent ces composants pour que le courant puisse y circuler ?"}
     ]
 
 col_sim, col_chat = st.columns([3, 2])
@@ -111,26 +112,16 @@ with col_sim:
         fig.add_trace(go.Scatter(x=U, y=I, mode='lines', name='I = f(U)'))
         fig.update_layout(xaxis_title="U (V)", yaxis_title="I (A)")
 
-    # Thème visuel
     fig.update_traces(line=dict(width=4, color='#7fbfff'))
     fig.update_layout(
         template="plotly_dark",
         plot_bgcolor='#161b22',
         paper_bgcolor='#161b22',
         font=dict(color="#e6e6e6", size=14, family="Arial"),
-        xaxis=dict(
-            showgrid=True, gridwidth=1, gridcolor='rgba(255,255,255,0.05)',
-            zeroline=True, zerolinewidth=2, zerolinecolor='rgba(255,255,255,0.3)',
-            title_font=dict(size=14, color="#a3a3a3")
-        ),
-        yaxis=dict(
-            showgrid=True, gridwidth=1, gridcolor='rgba(255,255,255,0.05)',
-            zeroline=True, zerolinewidth=2, zerolinecolor='rgba(255,255,255,0.3)',
-            title_font=dict(size=14, color="#a3a3a3")
-        ),
+        xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.05)', zerolinecolor='rgba(255,255,255,0.3)'),
+        yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.05)', zerolinecolor='rgba(255,255,255,0.3)'),
         margin=dict(l=20, r=20, t=40, b=20)
     )
-
     st.plotly_chart(fig, use_container_width=True)
 
 with col_chat:
@@ -139,7 +130,6 @@ with col_chat:
     if "gemini_chat" not in st.session_state:
         st.session_state.gemini_chat = model.start_chat(history=[])
         
-    # Création d'un bloc avec une hauteur fixe pour forcer le défilement indépendant
     chat_container = st.container(height=600)
         
     with chat_container:
@@ -148,18 +138,13 @@ with col_chat:
                 st.markdown(msg["content"])
                 
     if prompt := st.chat_input("Pose ta question ici..."):
-        # 1. On sauvegarde la question
         st.session_state.messages.append({"role": "user", "content": prompt})
         
-        # 2. On interroge l'IA
         try:
             response = st.session_state.gemini_chat.send_message(prompt)
             reponse_ia = response.text
         except Exception as e:
             reponse_ia = f"Erreur technique de l'API : {e}"
             
-        # 3. On sauvegarde la réponse
         st.session_state.messages.append({"role": "assistant", "content": reponse_ia})
-        
-        # 4. On force le rechargement propre de l'interface
         st.rerun()
