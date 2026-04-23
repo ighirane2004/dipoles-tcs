@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.graph_objects as go
 import numpy as np
-import google.generativeai as genai
+import google.generativeai as genai 
 
 # Configuration API sécurisée
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
