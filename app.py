@@ -106,8 +106,19 @@ with col_sim:
     fig.update_traces(line=dict(width=4, color='#7fbfff'))
     fig.update_layout(
         template="plotly_dark", plot_bgcolor='#161b22', paper_bgcolor='#161b22',
-        xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.05)', title="Tension U (V)" if "f(U)" in fig.data[0].name else "Intensité I (A)"),
-        yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.05)', title="Intensité I (A)" if "f(U)" in fig.data[0].name else "Tension U (V)")
+        hovermode="x unified", # Affiche les coordonnées exactes au survol
+        xaxis=dict(
+            showgrid=True, gridcolor='rgba(255,255,255,0.15)', 
+            zerolinecolor='rgba(255,255,255,0.6)', zerolinewidth=2,
+            minor=dict(showgrid=True, gridcolor='rgba(255,255,255,0.04)'),
+            title="Tension U (V)" if "f(U)" in fig.data[0].name else "Intensité I (A)"
+        ),
+        yaxis=dict(
+            showgrid=True, gridcolor='rgba(255,255,255,0.15)', 
+            zerolinecolor='rgba(255,255,255,0.6)', zerolinewidth=2,
+            minor=dict(showgrid=True, gridcolor='rgba(255,255,255,0.04)'),
+            title="Intensité I (A)" if "f(U)" in fig.data[0].name else "Tension U (V)"
+        )
     )
     st.plotly_chart(fig, use_container_width=True)
 
