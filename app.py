@@ -139,21 +139,27 @@ with col_chat:
     if "gemini_chat" not in st.session_state:
         st.session_state.gemini_chat = model.start_chat(history=[])
         
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
-            
+    # Création d'un bloc avec une hauteur fixe pour forcer le défilement indépendant
+    chat_container = st.container(height=600)
+        
+    with chat_container:
+        for msg in st.session_state.messages:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
+                
     if prompt := st.chat_input("Pose ta question ici..."):
+        # 1. On sauvegarde la question
         st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-            
+        
+        # 2. On interroge l'IA
         try:
             response = st.session_state.gemini_chat.send_message(prompt)
             reponse_ia = response.text
         except Exception as e:
             reponse_ia = f"Erreur technique de l'API : {e}"
             
+        # 3. On sauvegarde la réponse
         st.session_state.messages.append({"role": "assistant", "content": reponse_ia})
-        with st.chat_message("assistant"):
-            st.markdown(reponse_ia)
+        
+        # 4. On force le rechargement propre de l'interface
+        st.rerun()
