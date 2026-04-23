@@ -58,9 +58,11 @@ with col_sim:
     fig = go.Figure()
     
     if dipole == "Conducteur Ohmique":
+        R = st.slider("Résistance (Ω)", 10, 500, 100, key="resistor")
         I = np.linspace(-0.2, 0.2, 200)
-        U = 100 * I
+        U = R * I
         fig.add_trace(go.Scatter(x=I, y=U, mode='lines', name='U = f(I)'))
+        fig.update_layout(yaxis_range=[-100, 100]) # Figer l'axe pour visualiser le changement de pente
     elif dipole == "Lampe":
         I = np.linspace(-0.2, 0.2, 200)
         U = 20 * I + 1500 * (I**3)
@@ -76,6 +78,7 @@ with col_sim:
         I = np.zeros_like(U)
         I[U >= Us] = 0.05 * (np.exp((U[U >= Us] - Us) * 5) - 1)
         I[U <= Uz] = -0.05 * (np.exp(-(U[U <= Uz] - Uz) * 5) - 1)
+        I = np.clip(I, -0.1, 0.1) # Bridage du courant pour éviter l'écrasement de l'axe
         fig.add_trace(go.Scatter(x=U, y=I, mode='lines', name='I = f(U)'))
     elif dipole == "Diode Électroluminescente (LED)":
         U = np.linspace(-3, 3, 300)
