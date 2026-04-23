@@ -35,7 +35,7 @@ PLAN DE LA LEÇON À SUIVRE STRICTEMENT :
 Ton ton : Pédagogue, direct, sans flatterie."""
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-2.5-flash",
     system_instruction=SYSTEM_PROMPT
 )
 
