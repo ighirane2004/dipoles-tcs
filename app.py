@@ -91,8 +91,6 @@ with col_sim:
         fig.update_layout(yaxis_range=[-0.02, 0.15])
 
     elif dipole == "Varistance (VDR)":
-
-    elif dipole == "Varistance (VDR)":
         I = np.linspace(-0.1, 0.1, 400)
         U = np.cbrt(I / 0.00005)
         fig.add_trace(go.Scatter(x=I, y=U, mode='lines', name='U = f(I)'))
