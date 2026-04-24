@@ -27,7 +27,7 @@ PLAN DE LA LEÇON :
 7. Varistance VDR (Paragraphe 2.4) : Lecture graphique (U en fonction de I). Mots : passif, non linéaire, symétrique.
 8. Diode à jonction (Paragraphe 2.5) : Mentionne le matériau (Si/Ge). Fais-lui découvrir le sens bloqué et le sens passant sur le simulateur. Fais-lui identifier la tension de seuil Us. Aide-le à remplir le tableau final (Interrupteur ouvert/fermé).
 9. Diode Zener (Paragraphe 2.6) : Comparaison avec la diode simple. Lecture de la tension Zener Uz.
-10. Capteurs (2.7 à 2.9) : Utilisation des curseurs pour voir l'influence de la température ou de la lumière sur la pente.
+10. Capteurs (2.7 à 2.9) : Utilisation des curseurs pour voir l'influence de la température ou de la lumière sur la pente (photorésistance et htérmistance ) 
 
 Ton ton : Franc, sans courtoisie excessive, focalisé sur l'efficacité pédagogique."""
 
