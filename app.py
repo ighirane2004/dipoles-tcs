@@ -78,10 +78,14 @@ with col_sim:
         U = np.linspace(-8, 2, 500)
         Us, Uz = 0.6, -6.2
         I = np.zeros_like(U)
+        # Sens direct
         I[U >= Us] = 0.05 * (np.exp((U[U >= Us] - Us) * 5) - 1)
+        # Effet Zener (sens inverse)
         I[U <= Uz] = -0.05 * (np.exp(-(U[U <= Uz] - Uz) * 5) - 1)
-        I = np.clip(I, -0.1, 0.1)
+        
         fig.add_trace(go.Scatter(x=U, y=I, mode='lines', name='I = f(U)'))
+        # Cadrage visuel pour voir l'avalanche sans plateau artificiel
+        fig.update_layout(yaxis_range=[-0.15, 0.15])
 
     elif dipole == "Varistance (VDR)":
         I = np.linspace(-0.1, 0.1, 400)
