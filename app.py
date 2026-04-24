@@ -70,8 +70,9 @@ with col_sim:
         U = np.linspace(-2, 1, 300)
         Us = 0.6
         I = np.where(U < Us, 0, 0.05 * (np.exp((U - Us) * 5) - 1))
-        I = np.clip(I, -0.01, 0.1)
+        # Suppression du clip qui crée le faux palier
         fig.add_trace(go.Scatter(x=U, y=I, mode='lines', name='I = f(U)'))
+        fig.update_layout(yaxis_range=[-0.02, 0.15]) # Limitation purement visuelle de l'axe Y
 
     elif dipole == "Diode Zener":
         U = np.linspace(-8, 2, 500)
