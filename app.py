@@ -99,9 +99,10 @@ with col_sim:
         U = R * I
         fig.add_trace(go.Scatter(x=I, y=U, mode='lines', name='U = f(I)'))
     elif dipole == "Varistance (VDR)":
-        U = np.linspace(-20, 20, 400)
-        I = 0.00005 * (U**3) 
-        fig.add_trace(go.Scatter(x=U, y=I, mode='lines', name='I = f(U)'))
+        I = np.linspace(-0.1, 0.1, 400)
+        # Inversion mathématique avec racine cubique pour U = f(I)
+        U = np.cbrt(I / 0.00005) 
+        fig.add_trace(go.Scatter(x=I, y=U, mode='lines', name='U = f(I)'))
 
     fig.update_traces(line=dict(width=4, color='#7fbfff'))
     fig.update_layout(
