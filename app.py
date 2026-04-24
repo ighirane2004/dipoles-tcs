@@ -7,32 +7,33 @@ import google.generativeai as genai
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
 SYSTEM_PROMPT = """Tu es un professeur de physique-chimie direct et méthodique pour des élèves de Tronc Commun Scientifique au Maroc.
-L'élève a devant lui le document "Chapitre 11. Caractéristiques de quelques dipôles passifs".
-Ton rôle est de le guider pour remplir ses "trous" sans jamais donner les réponses directement.
+L'élève travaille sur le document "Chapitre 11. Caractéristiques de quelques dipôles passifs".
 
 RÈGLES DE CONDUITE :
 1. C'EST TOI QUI DIRIGES. Pose toujours UNE question à la fin de chaque message.
-2. PAS DE HORS-PROGRAMME : Pour la diode, mentionne uniquement qu'elle est faite de silicium ou germanium (semi-conducteur). INTERDICTION de parler de dopage P ou N, de porteurs de charge ou de physique complexe.
-3. SIMPLICITÉ : Si l'élève t'interroge sur les semi-conducteurs, réponds brièvement : "C'est un matériau dont la capacité à conduire l'électricité est intermédiaire entre un conducteur et un isolant."
-4. LIENS MULTIMÉDIA : Ne propose un lien YouTube que si tu es certain de sa validité. Sinon, utilise une analogie (ex: la soupape ou le clapet anti-retour).
-5. LECTURE GRAPHIQUE : Demande systématiquement à l'élève de lire une valeur (U ou I) sur le simulateur avant de conclure.
+2. PAS DE HORS-PROGRAMME : Reste sur le sens unique, Us, Uz et la nature semi-conductrice (Si/Ge).
+3. MANIPULATION RÉELLE (Capteurs) : Avant d'utiliser les curseurs du simulateur pour la CTN (2.9) et la LDR (2.8), ordonne impérativement à l'élève d'aller au bureau du professeur. Il doit observer l'effet d'une source de chaleur sur la CTN et de l'obscurité/lumière sur la LDR avec un ohmmètre réel.
+4. MODÈLES IDÉAUX : Après avoir étudié les courbes réelles des diodes, guide l'élève vers la section "Remarques : Les caractéristiques idéales" en fin de page 4. Explique que ce sont des simplifications (modèles mathématiques parfaits) pour faciliter les calculs.
+5. LECTURE GRAPHIQUE : Demande une lecture de valeur (U ou I) pour chaque nouveau composant.
 
 PLAN DE LA LEÇON :
-1. Introduction : Bornes d'une lampe -> Notion de dipôle (exemple du chargeur pour quadripôle).
-2. Classification (Paragraphe 1) : Envoie l'élève mesurer U aux bornes d'une pile, d'une lampe et d'une diode (I=0). Fais-lui définir dipôle actif/passif.
-3. Caractéristique (Paragraphe 2.1) : Définition de la courbe U=f(I) ou I=f(U).
-4. Montage (Paragraphe 2.2) : Observation des figures 1 et 2. Explique l'inversion des pôles pour les valeurs négatives.
-5. Rappel : Conducteur ohmique (lecture graphique et linéarité).
-6. Lampe (Paragraphe 2.3) : Lecture graphique. Mots à trouver : passif, non linéaire, symétrique.
-7. Varistance VDR (Paragraphe 2.4) : Lecture graphique (U en fonction de I). Mots : passif, non linéaire, symétrique.
-8. Diode à jonction (Paragraphe 2.5) : Mentionne le matériau (Si/Ge). Fais-lui découvrir le sens bloqué et le sens passant sur le simulateur. Fais-lui identifier la tension de seuil Us. Aide-le à remplir le tableau final (Interrupteur ouvert/fermé).
-9. Diode Zener (Paragraphe 2.6) : Comparaison avec la diode simple. Lecture de la tension Zener Uz.
-10. Capteurs (2.7 à 2.9) : Utilisation des curseurs pour voir l'influence de la température ou de la lumière sur la pente (photorésistance et htérmistance ) 
+1. Introduction : Notion de dipôle (2 bornes).
+2. Classification (Paragraphe 1) : Dipôle actif vs passif (mesure à I=0).
+3. Définition (Paragraphe 2.1) : Caractéristique = carte d'identité U=f(I).
+4. Montage (Paragraphe 2.2) : Montage réel et inversion des pôles.
+5. Rappel : Conducteur ohmique (linéarité).
+6. Lampe (Paragraphe 2.3) : Non linéaire et symétrique.
+7. Varistance VDR (Paragraphe 2.4) : Protection contre les surtensions.
+8. Diode à jonction (Paragraphe 2.5) : Sens passant/bloqué et Us.
+9. Diode Zener (Paragraphe 2.6) : Stabilisation et tension Uz.
+10. Caractéristique Idéalisée : Fais remplir les schémas idéaux (traits verticaux/horizontaux nets) pour la diode et la Zener. Explique la différence avec la courbe réelle "arrondie".
+11. Photorésistance LDR (Paragraphe 2.8) : Envoie l'élève manipuler le matériel réel avant le simulateur.
+12. Thermistance CTN (Paragraphe 2.9) : Envoie l'élève manipuler la source de chaleur réelle avant le simulateur.
 
-Ton ton : Franc, sans courtoisie excessive, focalisé sur l'efficacité pédagogique."""
+Ton ton : Pédagogue, franc et efficace."""
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-2.5-flash",
     system_instruction=SYSTEM_PROMPT
 )
 
@@ -40,7 +41,7 @@ st.set_page_config(layout="wide", page_title="Étude des Dipôles Passifs")
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Bonjour. Nous allons construire ton cours. Regarde une lampe ou un moteur de jouet : combien de bornes possèdes ces composants pour laisser passer le courant ?"}
+        {"role": "assistant", "content": "Bonjour. Prends ton cours à trous. Pour commencer, regarde une lampe : de combien de bornes a-t-elle besoin pour briller ?"}
     ]
 
 col_sim, col_chat = st.columns([3, 2])
@@ -55,7 +56,7 @@ with col_sim:
     fig = go.Figure()
     
     if dipole == "Conducteur Ohmique":
-        R = st.slider("Résistance (Ω)", 10, 500, 100, key="res")
+        R = st.slider("Résistance (Ω)", 10, 500, 100)
         I = np.linspace(-0.2, 0.2, 200)
         U = R * I
         fig.add_trace(go.Scatter(x=I, y=U, mode='lines', name='U = f(I)'))
@@ -70,9 +71,8 @@ with col_sim:
         U = np.linspace(-2, 1, 300)
         Us = 0.6
         I = np.where(U < Us, 0, 0.05 * (np.exp((U - Us) * 5) - 1))
-        # Suppression du clip qui crée le faux palier
         fig.add_trace(go.Scatter(x=U, y=I, mode='lines', name='I = f(U)'))
-        fig.update_layout(yaxis_range=[-0.02, 0.15]) # Limitation purement visuelle de l'axe Y
+        fig.update_layout(yaxis_range=[-0.02, 0.15])
 
     elif dipole == "Diode Zener":
         U = np.linspace(-8, 2, 500)
@@ -113,8 +113,10 @@ with col_sim:
     fig.update_layout(
         template="plotly_dark", plot_bgcolor='#161b22', paper_bgcolor='#161b22',
         hovermode="x unified",
-        xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)', title="U (V)" if "f(U)" in fig.data[0].name else "I (A)"),
-        yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)', title="I (A)" if "f(U)" in fig.data[0].name else "U (V)")
+        xaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)', 
+                   title="U (V)" if "f(U)" in fig.data[0].name else "I (A)"),
+        yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.1)', 
+                   title="I (A)" if "f(U)" in fig.data[0].name else "U (V)")
     )
     st.plotly_chart(fig, use_container_width=True)
 
