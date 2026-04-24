@@ -76,7 +76,7 @@ with col_sim:
 
     elif dipole == "Diode Zener":
         U = np.linspace(-8, 2, 500)
-        Us, Uz = 0.6, -6.2
+        Us, Uz = 0.6, -4.8
         I = np.zeros_like(U)
         # Sens direct
         I[U >= Us] = 0.05 * (np.exp((U[U >= Us] - Us) * 5) - 1)
