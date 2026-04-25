@@ -1,19 +1,35 @@
 import streamlit as st
 import plotly.graph_objects as go
 import numpy as np
+import google.generativeai as genai
+
+# --- CONFIGURATION IA ---
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 st.set_page_config(layout="wide", page_title="Étude des Dipôles Passifs")
 
-# --- GESTION DE LA PROGRESSION (MACHINE À ÉTATS) ---
+# --- GESTION DE LA PROGRESSION ET DE L'IA ---
 if "etape" not in st.session_state:
     st.session_state.etape = 1
+if "ai_responses" not in st.session_state:
+    st.session_state.ai_responses = {}
+
+def clear_ai():
+    st.session_state.ai_responses = {}
 
 def next_step():
     st.session_state.etape += 1
+    clear_ai()
 
 def prev_step():
     st.session_state.etape -= 1
+    clear_ai()
 
+def ask_ai(hidden_prompt, key):
+    # Appel API caché avec un prompt lourdement structuré
+    response = model.generate_content(hidden_prompt)
+    st.session_state.ai_responses[key] = response.text
 # --- INTERFACE ---
 col_sim, col_guide = st.columns([3, 2])
 
