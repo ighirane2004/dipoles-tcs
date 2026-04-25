@@ -164,7 +164,24 @@ with col_guide:
         st.info("Observez successivement la 'Diode Zener' puis la 'LED'.")
         st.markdown("""
         * Comparez la Zener avec la diode simple étudiée précédemment. Que se passe-t-il dans les tensions négatives ?
-        * Relevez la valeur de la tension Zener $U_z$ (le claquage réversible).
+        * Relevez la valeur de la tension Zener $U_z$.
+        """)
+        
+        # Le bouton d'aide IA
+        if st.button("🤖 IA : Explique-moi le claquage réversible avec un exemple", use_container_width=True):
+            prompt_cache = """Agis comme un professeur de physique. 
+            Tâche : Explique l'effet d'avalanche (claquage réversible) de la diode Zener.
+            Contexte : Élève de 15 ans au lycée (Tronc Commun).
+            Format : 3 phrases maximum. Utilise une analogie très simple avec l'eau (comme un barrage ou une soupape de sécurité). Pas de jargon complexe."""
+            
+            with st.spinner("L'IA réfléchit..."):
+                ask_ai(prompt_cache, "explication_zener")
+                
+        # Affichage de la réponse si elle existe
+        if "explication_zener" in st.session_state.ai_responses:
+            st.success(st.session_state.ai_responses["explication_zener"])
+
+        st.markdown("""
         * Notez la tension de seuil plus élevée de la LED.
         * Reportez-vous à la remarque de votre cours sur les "caractéristiques idéalisées" pour simplifier ces courbes.
         """)
