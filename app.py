@@ -157,7 +157,7 @@ with col_guide:
         * **De retour au simulateur** : Sélectionnez 'Diode à jonction'.
         * Notez l'asymétrie totale. Lisez sur l'axe des abscisses la valeur de la tension $U_s$ où le courant décolle.
         * Remplissez le tableau récapitulatif (Sens direct / Sens bloqué).
-        """)
+        """) 
 
     elif st.session_state.etape == 6:
         st.subheader("6. La Diode Zener & LED")
