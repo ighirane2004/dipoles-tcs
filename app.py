@@ -114,95 +114,110 @@ with col_guide:
     st.markdown("---")
     
     if st.session_state.etape == 1:
-        st.subheader("1. Introduction et Classification")
-        st.warning("🛑 **ACTION REQUISE :** Allez au bureau du professeur.")
+        st.subheader("1. Fondamentaux : Dipôle Actif vs Passif")
         st.markdown("""
-        * Observez le multimètre branché aux bornes d'une pile, puis d'une lampe débranchée.
-        * Que vaut la tension $U$ quand le courant $I = 0$ ?
-        * Complétez le paragraphe 1 de votre cours (Définition d'un dipôle actif et passif).
-        """)
+        **Leçon :**
+        Un dipôle est **actif** s'il possède une tension à ses bornes même lorsqu'il est débranché (I=0). 
+        Un dipôle est **passif** si sa tension est nulle en l'absence de courant.
         
-    elif st.session_state.etape == 2:
-        st.subheader("2. Le Conducteur Ohmique (Rappel)")
-        st.info("Sélectionnez 'Conducteur Ohmique' dans le simulateur.")
-        st.markdown("""
-        * Observez la courbe. Elle passe par l'origine et forme une droite.
-        * Jouez avec le curseur de résistance. 
-        * Remplissez les trous correspondants dans votre polycopié : le dipôle est **passif** et **linéaire**.
+        🛑 **Manipulation :** Allez au bureau mesurer la tension d'une pile puis d'une lampe isolées.
         """)
+        if st.button("🤖 IA : Donne-moi un moyen mnémotechnique pour retenir la différence", use_container_width=True):
+            prompt = "Agis comme un prof de physique. Donne un moyen mnémotechnique ou une analogie très simple (2 phrases max) pour qu'un élève de 15 ans différencie un dipôle actif (qui donne l'énergie) d'un dipôle passif (qui la reçoit/consomme)."
+            with st.spinner("Génération..."): ask_ai(prompt, "actif_passif")
+        if "actif_passif" in st.session_state.ai_responses: st.success(st.session_state.ai_responses["actif_passif"])
+
+    elif st.session_state.etape == 2:
+        st.subheader("2. Le Conducteur Ohmique")
+        st.info("Sélectionnez 'Conducteur Ohmique' dans le simulateur à gauche.")
+        st.markdown("""
+        **Leçon :**
+        Sa caractéristique est une droite qui passe par l'origine. 
+        Puisqu'elle passe par zéro, c'est un dipôle **passif**. Puisque c'est une droite, il est **linéaire** (il obéit à la loi d'Ohm : U = R × I).
+        """)
+        if st.button("🤖 IA : Explique ce que signifie physiquement 'être linéaire'", use_container_width=True):
+            prompt = "Explique à un élève de 15 ans ce que signifie le mot 'linéaire' en physique pour un conducteur ohmique (proportionnalité entre U et I). Fais court, 3 phrases max."
+            with st.spinner("Génération..."): ask_ai(prompt, "lineaire")
+        if "lineaire" in st.session_state.ai_responses: st.success(st.session_state.ai_responses["lineaire"])
         
     elif st.session_state.etape == 3:
         st.subheader("3. La Lampe à incandescence")
         st.info("Sélectionnez 'Lampe' dans le simulateur.")
         st.markdown("""
-        * Passez la souris sur la courbe pour lire les coordonnées.
-        * Notez que l'allure n'est plus une droite.
-        * Complétez la leçon : La lampe est un dipôle **passif**, **non linéaire**, mais elle reste **symétrique**.
+        **Leçon :**
+        La courbe passe par l'origine (passif) et est symétrique. Mais ce n'est plus une droite ! 
+        La lampe est un dipôle **non linéaire**. Sa résistance n'est pas constante : elle augmente avec l'intensité à cause de l'échauffement du filament.
         """)
-        
+        if st.button("🤖 IA : Pourquoi le filament qui chauffe modifie la courbe ?", use_container_width=True):
+            prompt = "Explique simplement pourquoi la résistance d'un filament d'ampoule augmente quand il chauffe (agitation thermique qui freine les électrons). 3 phrases max."
+            with st.spinner("Génération..."): ask_ai(prompt, "lampe_chauffe")
+        if "lampe_chauffe" in st.session_state.ai_responses: st.success(st.session_state.ai_responses["lampe_chauffe"])
+
     elif st.session_state.etape == 4:
         st.subheader("4. La Varistance (VDR)")
-        st.info("Sélectionnez 'Varistance (VDR)' dans le simulateur.")
+        st.info("Sélectionnez 'Varistance (VDR)'.")
         st.markdown("""
-        * Observez comment la tension réagit aux variations de courant.
-        * Quel est le rôle de ce composant selon vous ? (Aide : regardez ce qui se passe pour des courants très élevés).
-        * Tracez l'allure de la courbe dans le cadre de votre polycopié.
+        **Leçon :**
+        La VDR (Voltage Dependent Resistor) a une résistance qui s'effondre quand la tension devient trop forte. 
+        Elle agit comme un bouclier : elle est placée en dérivation pour absorber les surtensions brutales et protéger le reste du circuit.
         """)
+        if st.button("🤖 IA : Donne une analogie pour comprendre le rôle de protection de la VDR", use_container_width=True):
+            prompt = "Donne une analogie (ex: un canal de dérivation pour une rivière en crue) pour expliquer le rôle de protection contre les surtensions d'une varistance VDR. 2 phrases max."
+            with st.spinner("Génération..."): ask_ai(prompt, "vdr_analogie")
+        if "vdr_analogie" in st.session_state.ai_responses: st.success(st.session_state.ai_responses["vdr_analogie"])
 
     elif st.session_state.etape == 5:
         st.subheader("5. La Diode à Jonction")
-        st.warning("🛑 **ACTION REQUISE :** Allez au bureau du professeur.")
+        st.info("Sélectionnez 'Diode à jonction'.")
         st.markdown("""
-        * Insérez une vraie diode dans le circuit. Que fait l'ampèremètre si on la branche à l'envers ?
-        * **De retour au simulateur** : Sélectionnez 'Diode à jonction'.
-        * Notez l'asymétrie totale. Lisez sur l'axe des abscisses la valeur de la tension $U_s$ où le courant décolle.
-        * Remplissez le tableau récapitulatif (Sens direct / Sens bloqué).
-        """) 
+        **Leçon :**
+        C'est un dipôle **polarisé** (asymétrique). 
+        - Sens bloqué (U < 0) : Le courant ne passe pas (I = 0).
+        - Sens direct : Le courant ne passe que si la tension dépasse une valeur minimale appelée **tension de seuil ($U_s$)**.
+        """)
+        if st.button("🤖 IA : C'est quoi la 'tension de seuil' ?", use_container_width=True):
+            prompt = "Explique le concept de 'tension de seuil' (Us) d'une diode (comme une porte qui nécessite une certaine force pour s'ouvrir). 2 phrases max."
+            with st.spinner("Génération..."): ask_ai(prompt, "diode_seuil")
+        if "diode_seuil" in st.session_state.ai_responses: st.success(st.session_state.ai_responses["diode_seuil"])
 
     elif st.session_state.etape == 6:
-        st.subheader("6. La Diode Zener & LED")
-        st.info("Observez successivement la 'Diode Zener' puis la 'LED'.")
+        st.subheader("6. La Diode Zener")
+        st.info("Sélectionnez 'Diode Zener'.")
         st.markdown("""
-        * Comparez la Zener avec la diode simple étudiée précédemment. Que se passe-t-il dans les tensions négatives ?
-        * Relevez la valeur de la tension Zener $U_z$.
+        **Leçon :**
+        Elle se comporte comme une diode normale dans le sens direct. Mais dans le sens inverse, au lieu de rester bloquée indéfiniment, elle laisse passer le courant à partir d'une tension précise : **la tension Zener ($U_z$)**. 
+        C'est l'effet d'avalanche, utilisé pour stabiliser une tension.
         """)
-        
-        # Le bouton d'aide IA
-        if st.button("🤖 IA : Explique-moi le claquage réversible avec un exemple", use_container_width=True):
-            prompt_cache = """Agis comme un professeur de physique. 
-            Tâche : Explique l'effet d'avalanche (claquage réversible) de la diode Zener.
-            Contexte : Élève de 15 ans au lycée (Tronc Commun).
-            Format : 3 phrases maximum. Utilise une analogie très simple avec l'eau (comme un barrage ou une soupape de sécurité). Pas de jargon complexe."""
-            
-            with st.spinner("L'IA réfléchit..."):
-                ask_ai(prompt_cache, "explication_zener")
-                
-        # Affichage de la réponse si elle existe
-        if "explication_zener" in st.session_state.ai_responses:
-            st.success(st.session_state.ai_responses["explication_zener"])
-
-        st.markdown("""
-        * Notez la tension de seuil plus élevée de la LED.
-        * Reportez-vous à la remarque de votre cours sur les "caractéristiques idéalisées" pour simplifier ces courbes.
-        """)
+        if st.button("🤖 IA : Explique le claquage réversible (Effet Zener)", use_container_width=True):
+            prompt = "Explique l'effet d'avalanche (claquage réversible) de la diode Zener avec une analogie avec l'eau (soupape de sécurité). 3 phrases max."
+            with st.spinner("Génération..."): ask_ai(prompt, "zener_avalanche")
+        if "zener_avalanche" in st.session_state.ai_responses: st.success(st.session_state.ai_responses["zener_avalanche"])
 
     elif st.session_state.etape == 7:
         st.subheader("7. La Photorésistance (LDR)")
-        st.warning("🛑 **ACTION REQUISE :** Allez manipuler au bureau.")
+        st.info("Sélectionnez 'Photorésistance (LDR)'. Jouez avec la luminosité.")
         st.markdown("""
-        * Cachez la LDR avec vos mains pour faire l'obscurité. Que fait l'ohmmètre ?
-        * **Sur le simulateur** : Utilisez le curseur de luminosité.
-        * Concluez sur la relation entre lumière et résistance dans votre cours.
+        **Leçon :**
+        La Light Dependent Resistor est un capteur. 
+        Dans l'obscurité totale, sa résistance est énorme (elle se comporte presque comme un isolant). Plus elle est éclairée, plus sa résistance diminue et laisse passer le courant.
         """)
+        if st.button("🤖 IA : Donne des exemples d'utilisation de la LDR au quotidien", use_container_width=True):
+            prompt = "Cite 2 exemples d'utilisation courante d'une photorésistance (LDR) dans la vie de tous les jours (ex: lampadaires automatiques). Fais court."
+            with st.spinner("Génération..."): ask_ai(prompt, "ldr_exemples")
+        if "ldr_exemples" in st.session_state.ai_responses: st.success(st.session_state.ai_responses["ldr_exemples"])
 
     elif st.session_state.etape == 8:
         st.subheader("8. La Thermistance (CTN)")
-        st.warning("🛑 **ACTION REQUISE :** Allez manipuler au bureau.")
+        st.info("Sélectionnez 'Thermistance (CTN)'. Jouez avec la température.")
         st.markdown("""
-        * Approchez une source de chaleur de la thermistance. Que fait la résistance ?
-        * **Sur le simulateur** : Manipulez le curseur de température pour vérifier le modèle mathématique.
-        * Complétez la dernière partie de votre polycopié.
+        **Leçon :**
+        La CTN (Coefficient de Température Négatif) voit sa résistance **diminuer** quand la température **augmente**. 
+        C'est le composant principal des thermomètres électroniques et des sécurités anti-surchauffe.
         """)
+        if st.button("🤖 IA : Quelle est la différence entre une CTN et une CTP ?", use_container_width=True):
+            prompt = "Explique brièvement et simplement la différence entre une thermistance CTN et une thermistance CTP vis-à-vis de la température."
+            with st.spinner("Génération..."): ask_ai(prompt, "ctn_ctp")
+        if "ctn_ctp" in st.session_state.ai_responses: st.success(st.session_state.ai_responses["ctn_ctp"])
 
     st.markdown("---")
     col_btn1, col_btn2 = st.columns(2)
